@@ -127,16 +127,6 @@ void bravo_receiver_enable(int en)
 	}
 }
 
-static void config_gpio_table(uint32_t *table, int len)
-{
-	int n;
-	unsigned id;
-	for (n = 0; n < len; n++) {
-		id = table[n];
-		msm_proc_comm(PCOM_RPC_GPIO_TLMM_CONFIG_EX, &id, 0);
-	}
-}
-
 static uint32_t bt_sco_enable[] = {
 	PCOM_GPIO_CFG(BRAVO_BT_PCM_OUT, 1, GPIO_OUTPUT,
 			GPIO_NO_PULL, GPIO_2MA),
@@ -276,5 +266,5 @@ void __init bravo_audio_init(void)
 	q6audio_register_analog_ops(&ops);
 	acoustic_register_ops(&acoustic);
 	if (is_cdma_version(system_rev))
-		q6audio_set_acdb_file("default_PMIC.acdb");
+		q6audio_set_acdb_file("default_mos.acdb");
 }
