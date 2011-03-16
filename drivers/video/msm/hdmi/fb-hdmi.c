@@ -303,6 +303,8 @@ static int hdmifb_blit(struct fb_info *info, void __user *p)
         /* Copy the requested blit in case we're mirroring */
         if (_hdmi_fb->mirroring)
         {
+            int previousValue = _hdmi_fb->doubleBuffering;
+
             memcpy(&_hdmi_fb->mirrorReq, &req, sizeof(struct mdp_blit_req));
 
             /* Default double-buffering off */
@@ -316,13 +318,14 @@ static int hdmifb_blit(struct fb_info *info, void __user *p)
                 {
                     _hdmi_fb->doubleBuffering = 1;
                 }
-                else
-                {
-                    // Switch us back to buffer 0
-                    mdp->dma(mdp, _hdmi_fb->fb->fix.smem_start, _hdmi_fb->fb->var.xres * 2, 
-                             _hdmi_fb->fb->var.xres, _hdmi_fb->fb->var.yres, 0, 0, 
-                             &_hdmi_fb->dma_callback, _hdmi_fb->panel->interface_type);
-                }
+            }
+
+            if (previousValue == 1 && _hdmi_fb->doubleBuffering == 0)
+            {
+                // Switch us back to buffer 0
+                mdp->dma(mdp, _hdmi_fb->fb->fix.smem_start, _hdmi_fb->fb->var.xres * 2, 
+                         _hdmi_fb->fb->var.xres, _hdmi_fb->fb->var.yres, 0, 0, 
+                         &_hdmi_fb->dma_callback, _hdmi_fb->panel->interface_type);
             }
         }
 
